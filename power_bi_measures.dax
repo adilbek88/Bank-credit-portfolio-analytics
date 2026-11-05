@@ -1,0 +1,24 @@
+-- Power BI: Import monthly_snapshots and loans from CSV or SQLite.
+-- Create relationship: loans[loan_id] (one) -> monthly_snapshots[loan_id] (many)
+-- Use monthly_snapshots[snapshot_date] on the X axis / slicer.
+Balance KZT = SUM(monthly_snapshots[balance_kzt])
+
+PAR30 Balance KZT =
+CALCULATE(
+    [Balance KZT],
+    monthly_snapshots[days_past_due] >= 30
+)
+
+PAR30 % = DIVIDE([PAR30 Balance KZT], [Balance KZT], 0)
+
+PAR90 Balance KZT =
+CALCULATE(
+    [Balance KZT],
+    monthly_snapshots[days_past_due] >= 90
+)
+
+PAR90 % = DIVIDE([PAR90 Balance KZT], [Balance KZT], 0)
+
+Payments KZT = SUM(monthly_snapshots[payment_received_kzt])
+
+Active Loans = DISTINCTCOUNT(monthly_snapshots[loan_id])
